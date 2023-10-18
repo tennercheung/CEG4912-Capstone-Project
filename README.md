@@ -1,5 +1,5 @@
 # CEG4912-Capstone-Project
-We start by searching the subject
+We start by searching the subject of
 
 
 
