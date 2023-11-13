@@ -1,10 +1,17 @@
+# before running add the following files: screenshot.jpg and ai_waste_sorter_v1.tflite
+
+
 # import PIL #pip install pillow
 import pathlib
 import tensorflow as tf
 import os
+import numpy as np
 
-from pathlib import Path
+# from pathlib import Path
 # from PIL import UnidentifiedImageError
+
+img_height = 180
+img_width = 180
 
 img_dir = pathlib.Path("screenshot.jpg")
 
@@ -22,8 +29,8 @@ img = tf.keras.utils.load_img(
 img_array = tf.keras.utils.img_to_array(img)
 img_array = tf.expand_dims(img_array, 0) # Create a batch
 
-predictions = model.predict(img_array)
-score = tf.nn.softmax(predictions[0])
+#predictions = model.predict(img_array)
+#score = tf.nn.softmax(predictions[0])
 
 TF_MODEL_FILE_PATH = 'ai_waste_sorter_v1.tflite' # The default path to the saved TensorFlow Lite model
 
@@ -37,10 +44,10 @@ classify_lite
 
 predictions_lite = classify_lite(sequential_1_input=img_array)['outputs']
 score_lite = tf.nn.softmax(predictions_lite)
-
+class_names = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 print(
     "This image most likely belongs to {} with a {:.2f} percent confidence."
     .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
 )
 
-print(np.max(np.abs(predictions - predictions_lite)))
+#print(np.max(np.abs(predictions - predictions_lite)))
