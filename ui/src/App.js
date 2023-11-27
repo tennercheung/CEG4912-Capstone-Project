@@ -1,72 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import { ProgressBar } from 'react-bootstrap';
-import './App.css'; // Import du fichier CSS
-import { CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 import axios from 'axios';
-
+import Header from './components/Header';
+import ProgressBarContainer from './components/ProgressBarContainer';
+import RecyclageResultats from './components/RecyclageResultats';
+import './App.css';
 
 function App() {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [trashLevels, setTrashLevels] = useState([25, 50, 75, 100]);
+  const [trashLevels, setTrashLevels] = useState([0, 0, 0, 0]);
   const [recyclageResultats, setRecyclageResultats] = useState('');
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentDateTime(new Date());
-    }, 1000);
+    // Fonction pour effectuer la requête POST
+    const fetchData = async () => {
+      try {
+        const [res1, res2, res3, res4, resultRes] = await Promise.all([
+          axios.post('http://localhost:5000/show_level1'),
+          axios.post('http://localhost:5000/show_level2'),
+          axios.post('http://localhost:5000/show_level3'),
+          axios.post('http://localhost:5000/show_level4'),
+          axios.post('http://localhost:5000/show_result')
+        ]);
 
-    return () => clearInterval(interval);
-  }, []);
+        const level1 = res1.data.level1;
+        const level2 = res2.data.level2;
+        const level3 = res3.data.level3;
+        const level4 = res4.data.level4;
+        const wasteType = resultRes.data.type;
 
-  useEffect(() => {
-    // Appel à l'API pour récupérer les résultats du recyclage
-    axios.get('http://127.0.0.1:5000//recyclage_resultats')
-    
-      .then(response => {
-        setRecyclageResultats(response.data);
-      })
-      .catch(error => {
-        console.error('Erreur lors de la récupération des résultats du recyclage:', error);
-      });
-  }, []);
+        setRecyclageResultats(wasteType);
+        setTrashLevels([level1, level2, level3, level4]);
+
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+      }
+    };
+
+    const dataInterval = setInterval(fetchData, 5000);// every 5 seconds
+
+// Function to update currentDateTime every second
+const updateTime = () => {setCurrentDateTime(new Date());};
+
+// Update time every second
+const timeInterval = setInterval(updateTime, 1000);
+
+
+    return () => {clearInterval(dataInterval);
+                  clearInterval(timeInterval);}
+  }, []);  
 
   return (
-    <div className="container">
-      <div className="header">
-        <div className="logo-container">
-          <img src="AI SORTER LOGO.png" alt="AI WASTE SORTER" className="logo"/>
-        </div>
-        <div className="date-time">
-          <div className="time-style">
-            {currentDateTime.toLocaleTimeString('fr-FR')}
-          </div>
-          <div className="date-style">
-            {currentDateTime.toLocaleDateString('fr-FR')}
-          </div>
-        </div>
-      </div>
-      <div className="trash-bins-container">
-        {trashLevels.map((level, index) => (
-          <div key={index} className="trash-bin">
-            <ProgressBar now={level} label={`${level}%`} />
-            <CircularProgressbar value={level} text={`${level}%`} />
-          </div>
-        ))}
-      </div>
-
-      <div>
-      {/* Autres éléments de votre interface ici */}
-      <textarea
-        value={recyclageResultats}
-        rows={6}
-        cols={50}
-        readOnly
-        placeholder="Résultats du recyclage..."
-      />
-    </div>
-    </div>
-
+    <>
+      <Header currentDateTime={currentDateTime} />
+      <RecyclageResultats recyclageResultats={recyclageResultats} />
+      <ProgressBarContainer trashLevels={trashLevels} />
+    </>
   );
 }
 

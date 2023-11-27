@@ -1,27 +1,30 @@
 .container {
     max-width: 100%;
-    /*background-color: rgb(146, 200, 187);*/
+    /* background-color: rgb(253, 0, 0); */
   }
 
   .header{
     display: flex;
     align-items: center;
-    margin-bottom: 200px;
+    margin-bottom: 20px;
   }
   
   .logo-container {
-    margin-right: auto;
+   padding-top: 1%;
+   padding-right: 60%;
+   padding-left: 10%;
   }
   
   .logo {
-    max-width: 115px;
+    max-width: 230px;
     height: auto;
   }
   
   .date-time {
-    display: flex;
+    /* padding-left: 70%; 
+    /* display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-end; */
   }
 
   .time-style {
@@ -37,16 +40,50 @@
     display: flex;
     flex-wrap: wrap; /* Pour placer les barres de progression en ligne */
     justify-content: center;
-    gap: 20px; /* Espacement entre les barres de progression */
+    gap: 30px; /* Espacement entre les barres de progression */
   }
 
   .trash-bin {
-    width: 250px; /* Ajustez la largeur des barres de progression selon vos besoins */
+    width: 250px; 
     text-align: center;
   }
   
-  /* Styles pour les barres de progression elles-mêmes */
+  
   .progress {
     width: 100%;
+  }
+  
+  .bin-title {
+    margin-top: 10px; /* Adjust the margin as needed */
+    font-size: 30px; /* Adjust the font size as needed */
+    color: #333; /* Adjust the color as needed */
+  }
+
+  .result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 50px;
+  }
+  
+  .result-textarea {
+    margin-top: 20px; /* Adjust the margin as needed */
+  }
+
+  .result-box {
+    border: 10px solid #ccc; /* Add a border to create a box effect */
+    padding: 15px; /* Add padding for spacing within the box */
+  }
+  
+  .result-text {
+    overflow-wrap: break-word; /* Allow long words to break and wrap onto the next line */
+    font-size: 200%;
+  }
+
+  .bin-message {
+    font-size: 25px; 
+    color: red;
   }
   
