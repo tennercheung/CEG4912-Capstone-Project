@@ -11,7 +11,7 @@ CORS(app)
 example_sensor_data = {
     "distance1": 0 , 
     "distance2": 20,
-    "distance3": 30,
+    "distance3": 80,
     "distance4": 50
 }
 
