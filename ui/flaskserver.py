@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Import the CORS module
 
+# from multiprocessing import Process,Queue,Pipe
+# from ai_waste_sorter_v2 import prediction_str
+
 app = Flask(__name__)
 CORS(app)
 
@@ -81,5 +84,18 @@ def show_level4():
         # Retourne simplement la valeur de distance pour l'afficher dans le navigateur for GET requests
         return f"La level4 actuelle est : {trash_level['level4']} cm"
 
+
+# def GetLabel(fileName):
+#     return fileName.split('-')[0]
+
 if __name__ == '__main__':
+    # parent_conn,child_conn = Pipe()
+    # p = Process(target=sendMsg,args=(child_conn,))
+    # #p2 = Process(target=GetLabel,args=(fileName,))
+    # p.start()
+    # print("Received:"+str(parent_conn.recv()))
+
+    # print(ai_waste_sorter_v2.prediction_str)
     app.run(debug=True)
+
+    

@@ -1,0 +1,1 @@
+/home/ceg491x-group10/Downloads/CEG4912-Capstone-Project/ui/ai_waste_sorter_v2.py
