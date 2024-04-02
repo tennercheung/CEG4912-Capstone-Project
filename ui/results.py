@@ -1,1 +1,1 @@
-result_recyc = None
+result_recyc = "Waiting"

@@ -40,6 +40,9 @@ import threading
 import signal
 import subprocess
 from werkzeug.serving import run_simple
+
+import requests
+# from results import result_recyc
 # from multiprocessing import Process, Pipe
 
 
@@ -51,6 +54,9 @@ uri = "mongodb+srv://tennercheung:vcJNot9DgpqX918l@cluster0.venlknx.mongodb.net/
 client = MongoClient(uri)
 db = client['waste_captures']
 collection = db['random']
+
+url_socketio = 'http://localhost:5000/show_result'
+
 
 
 def uploadPicture(prediction, picture_num):
@@ -100,7 +106,7 @@ def GetLabel(fileName):
 
 def takePicture():
     
-    arduino = serial.Serial(port='/dev/ttyACM0',  baudrate=9600, timeout=.1)
+#     arduino = serial.Serial(port='/dev/ttyACM0',  baudrate=9600, timeout=.1)
     cam=cv2.VideoCapture(0)
     
     cv2.namedWindow("test", cv2.WINDOW_NORMAL)
@@ -111,23 +117,23 @@ def takePicture():
     
     while True:
 
-        #ret, frame = cam.read()
-        # if not ret:
-        #     print("failed to grab frame")
-        #     break
-        # cv2.imshow("Camera Preview", frame)
+        ret, frame = cam.read()
+        if not ret:
+            print("failed to grab frame")
+            break
+        cv2.imshow("test", frame)
 
-        # k = cv2.waitKey(1)
+        k = cv2.waitKey(1)
         # if k%256 == 27:
         #     # ESC pressed
         #     print("Escape hit, closing...")
         #     break
         #elif k%256 == 32:
-
-        data = arduino.readline().decode('utf-8').rstrip()
-        if (data == "picture"):
-                # time.sleep(2)  
-                ret, frame = cam.read()
+        if k%256 == 32:     
+        # data = arduino.readline().decode('utf-8').rstrip()
+        # if (data == "picture"):
+        #         time.sleep(2)  
+        #         ret, frame = cam.read()
 
                 if ret:
                         img_name = "waste_{}.jpg".format(img_counter)
@@ -178,35 +184,46 @@ modelPath
 #modelPath = "export.pkl"
 learn_inf = load_learner(modelPath)
 prediction_str=""
+result = ""
+
+# def updateRes():
+#     result = prediction_str
+#     return result
+
 
 while(True):
         img_num = takePicture()
         output = learn_inf.predict(mpimg.imread(get_image_files(data_dir)[0])) #raw prediction
         
         prediction_str = str(output[0])
+        data = {"type" : prediction_str}
+        response = requests.post(url_socketio, json=data)
+        respo = requests.get(url_socketio)
         print (prediction_str)
+        print(response.json())
+        print(respo)
 
         uploadPicture(prediction_str,img_num)
-        disposeWaste(prediction_str)
+        # disposeWaste(prediction_str)
 
-example_sensor_data = {
-    "distance1": 0 , 
-    "distance2": 20,
-    "distance3": 30,
-    "distance4": 50
-}
+# example_sensor_data = {
+#     "distance1": 0 , 
+#     "distance2": 20,
+#     "distance3": 30,
+#     "distance4": 50
+# }
 
-trash_level = {
-    "level1": 100 - example_sensor_data['distance1'], 
-    "level2": 100 - example_sensor_data['distance2'],
-    "level3": 100 - example_sensor_data['distance3'],
-    "level4": 100 - example_sensor_data['distance4']
-}
+# trash_level = {
+#     "level1": 100 - example_sensor_data['distance1'], 
+#     "level2": 100 - example_sensor_data['distance2'],
+#     "level3": 100 - example_sensor_data['distance3'],
+#     "level4": 100 - example_sensor_data['distance4']
+# }
 
 
-models_result = {
-    "type" : prediction_str
-}
+# models_result = {
+#     "type" : prediction_str
+# }
 
 # @app.route('/update_distance', methods=['POST'])
 # def update_distance():

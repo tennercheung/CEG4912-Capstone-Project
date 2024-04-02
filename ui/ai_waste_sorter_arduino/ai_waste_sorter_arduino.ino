@@ -19,7 +19,8 @@ char S[15];
 boolean valid = false;
 Servo myservo;  // create servo object to control a servo
 
-
+auto sensor_read_timer = timer_create_default();
+auto char_read_timer = timer_create_default();
 void setup() {  
   
   pinMode(trig_1_Pin, OUTPUT);  
@@ -34,21 +35,49 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect.
   } 
+  sensor_read_timer.every(5000,object_sensor); 
+  char_read_timer.every(50,checkForWasteDump); 
  
 }  
 
 
 void loop() {  
-//  distance_pic = getDistance(trig_1_Pin,echo_1_Pin);
 
-  checkForWasteDump();
-  if(getDistance(trig_1_Pin,echo_1_Pin) < 20.0){
-    Serial.println("picture");
-  }
-  delay(50);
+//  sensor_read_timer.tick();
+//  char_read_timer.tick();
+
+  object_sensor();
+  
+  delay(3000);
 
  
 } 
+float getDistance(const int trigPin,const int echoPin){
+
+  float dur; 
+  float dist;
+  digitalWrite(trigPin, LOW);  
+  delayMicroseconds(2);  
+  digitalWrite(trigPin, HIGH);  
+  delayMicroseconds(10);  
+  digitalWrite(trigPin, LOW);
+
+  dur = pulseIn(echoPin, HIGH);  
+  dist = (dur*.0343)/2; 
+  
+  return dist;
+}
+void object_sensor(){
+  
+
+  if(getDistance(trig_1_Pin,echo_1_Pin) < 20.0){
+    Serial.println("picture");
+    checkForWasteDump();
+    
+  }
+}
+
+
 
 
 int stepCalculator(int targetBin, int currentBin){
@@ -90,21 +119,7 @@ int stepCalculator(int targetBin, int currentBin){
 }
 
 
-float getDistance(const int trigPin,const int echoPin){
 
-  float dur; 
-  float dist;
-  digitalWrite(trigPin, LOW);  
-  delayMicroseconds(2);  
-  digitalWrite(trigPin, HIGH);  
-  delayMicroseconds(10);  
-  digitalWrite(trigPin, LOW);
-
-  dur = pulseIn(echoPin, HIGH);  
-  dist = (dur*.0343)/2; 
-  
-  return dist;
-}
 
 void rotateBin(char sort){
   if(currentBin == 'I'){
@@ -193,51 +208,56 @@ void rotateBin(char sort){
 boolean checkForWasteDump(){
   char buffer[16];
 
-  if (Serial.available() > 0) {
+//  if (Serial.available() > 0) {
     int size = Serial.readBytesUntil('\n', buffer, 12);
   
-  int endPos = 90;
-
-  if (buffer[0] == 'R') {
-    valid = true;
-    done = false;
-    rotateBin(buffer[0]);
-  }
-  else if (buffer[0] == 'P') {
-    valid = true;
-    done = false;
-    rotateBin(buffer[0]);
-  }
-  else if (buffer[0] == 'W') {
-    valid = true;
-    done = false;
-    rotateBin(buffer[0]);
-  }
-  else if (buffer[0] == 'O') {
-    valid = true;
-    done = false;
-    rotateBin(buffer[0]);
-  }
+    int endPos = 90;
   
-  if(valid==true){
-    int pos = 0;    // variable to store the servo position
-
-//    delay(500);
-    for (pos = 0; pos <= endPos; pos += 1) { // goes from 0 degrees to 180 degrees
-      // in steps of 1 degree
-      myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      delay(15);                       // waits 15 ms for the servo to reach the position
+    if (buffer[0] == 'R') {
+      valid = true;
+      done = false;
+      rotateBin(buffer[0]);
+//      Serial.println("recycling");
     }
-    delay(500);
-    for (pos = endPos; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-      myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      delay(15);                       // waits 15 ms for the servo to reach the position
+    else if (buffer[0] == 'P') {
+      valid = true;
+      done = false;
+      rotateBin(buffer[0]);
+//      Serial.println("paper");
     }
-  valid = false;
+    else if (buffer[0] == 'W') {
+      valid = true;
+      done = false;
+      rotateBin(buffer[0]);
+//      Serial.println("waste");
+    }
+    else if (buffer[0] == 'O') {
+      valid = true;
+      done = false;
+      rotateBin(buffer[0]);
+//      Serial.println("other");
+    }
     
-  }
+    
+    if(valid==true){
+      int pos = 0;    // variable to store the servo position
   
-  }
+      delay(500);
+      for (pos = 0; pos <= endPos; pos += 1) { // goes from 0 degrees to 180 degrees
+        // in steps of 1 degree
+        myservo.write(pos);              // tell servo to go to position in variable 'pos'
+        delay(15);                       // waits 15 ms for the servo to reach the position
+      }
+      delay(500);
+      for (pos = endPos; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+        myservo.write(pos);              // tell servo to go to position in variable 'pos'
+        delay(15);                       // waits 15 ms for the servo to reach the position
+      }
+      valid = false;
+      
+    }
+  
+//  }
   
   return valid; 
 }

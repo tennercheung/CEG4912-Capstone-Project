@@ -126,7 +126,7 @@ def takePicture():
 
         data = arduino.readline().decode('utf-8').rstrip()
         if (data == "picture"):
-                time.sleep(2)  
+                # time.sleep(2)  
                 ret, frame = cam.read()
 
                 if ret:
@@ -151,7 +151,7 @@ def takePicture():
 
 
 def disposeWaste(prediction_str): ## add other using low confidence value (<60%)
-    with serial.Serial('/dev/ttyACM0', 9600, timeout=10) as ser:
+    with serial.Serial('/dev/ttyACM0', 9600, timeout=10) as ser: #timeout 10 as default
         waste_bin_name = ""
         if (prediction_str == 'metal' or prediction_str == 'plastic' or prediction_str == 'glass'):
                 ser.write(bytes('R\n','utf-8'))
@@ -189,24 +189,24 @@ while(True):
         uploadPicture(prediction_str,img_num)
         disposeWaste(prediction_str)
 
-example_sensor_data = {
-    "distance1": 0 , 
-    "distance2": 20,
-    "distance3": 30,
-    "distance4": 50
-}
+# example_sensor_data = {
+#     "distance1": 0 , 
+#     "distance2": 20,
+#     "distance3": 30,
+#     "distance4": 50
+# }
 
-trash_level = {
-    "level1": 100 - example_sensor_data['distance1'], 
-    "level2": 100 - example_sensor_data['distance2'],
-    "level3": 100 - example_sensor_data['distance3'],
-    "level4": 100 - example_sensor_data['distance4']
-}
+# trash_level = {
+#     "level1": 100 - example_sensor_data['distance1'], 
+#     "level2": 100 - example_sensor_data['distance2'],
+#     "level3": 100 - example_sensor_data['distance3'],
+#     "level4": 100 - example_sensor_data['distance4']
+# }
 
 
-models_result = {
-    "type" : prediction_str
-}
+# models_result = {
+#     "type" : prediction_str
+# }
 
 # @app.route('/update_distance', methods=['POST'])
 # def update_distance():
